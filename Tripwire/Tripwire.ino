@@ -1,8 +1,8 @@
 /*  LASER TRIPWIRE MODULE
 
-    The Laser Tripwire Module is a versatile tripwire system which is working Arduino UNO.
+    The Laser Tripwire Module is a versatile tripwire system which is working with Arduino UNO or upper versions.
     For driving this code as stable, You need one laser circuit for transmitter and one sensor circuit for receiver.
-    In receiver side, Buzzer code is embedded to inside. You can not split or deactivating it.
+    For a better stability, do not change anything in this library and edit constant value that given at the top.
 
     This Library was written by Berk Altun - www.vberkaltun.com
     All right reserved - 2017
@@ -13,8 +13,14 @@
 #define pin_laser 02
 #define pin_buzzer 03
 
-// This is related with your environment and ambient light
+// Related with your environment and ambient light
 #define cut_off 650
+
+// Working duration of buzzer
+#define delay_buzzer 100
+
+// Displaying duration of text
+#define delay_text 1000
 
 void setup() {
 
@@ -36,11 +42,38 @@ void loop() {
 
 void initialize_laser() {
 
+  // Read the input pin and - or debug value
+  Serial.println("LASER INITIALIZING ...");
+
+  // Wait for specified time
+  delay(delay_text);
+
+  // -----
+
   // Turn the pin on (HIGH is the voltage level)
   digitalWrite(pin_laser, HIGH);
 
-  // While sensor return true, run recursively. Otherwise, break process tree
-  while (true) if (initialize_sensor() == false) break;
+  // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
+  if (initialize_sensor() == true) {
+
+    // Read the input pin and - or debug value
+    Serial.println("STEPPER > DOWNSIDE");
+
+    while (true) {
+      if (stepper_downside() == true) break;
+    }
+  }
+  else {
+
+    // Read the input pin and - or debug value
+    Serial.println("STEPPER > UPSIDE");
+
+    while (true) {
+      if (stepper_downside() == true) break;
+    }
+  }
+
+  // -----
 
   // Turn the pin off (LOW is the voltage level)
   digitalWrite(pin_laser, LOW);
@@ -51,21 +84,36 @@ void initialize_laser() {
 
 bool initialize_sensor() {
 
-  // Read the input pin and debug value
-  Serial.println(analogRead(pin_sensor));
+  // Read the input pin and - or debug value
+  Serial.println("SENSOR VALUE = " + String(analogRead(pin_sensor)));
 
   // If laser tripwire interrupted by an object, break tripwire process
   return (analogRead(pin_sensor) <= cut_off ? false : true);
 }
 
-bool initialize_buzzer() {
+void initialize_buzzer() {
+
+  // Read the input pin and - or debug value
+  Serial.println("BUZZER > TRUE");
 
   // Turn the pin on (HIGH is the voltage level)
   digitalWrite(pin_buzzer, HIGH);
 
-  // Wait for 10 miliseconds
-  delay(100);
+  // Wait for specified time
+  delay(delay_buzzer);
 
   // Turn the pin off (LOW is the voltage level)
   digitalWrite(pin_buzzer, LOW);
+}
+
+bool stepper_upside() {
+
+
+
+  return (initialize_sensor() == false ? false : true);
+}
+
+bool stepper_downside() {
+
+  return (initialize_sensor() == true ? false : true);
 }
