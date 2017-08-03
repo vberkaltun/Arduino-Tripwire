@@ -8,19 +8,24 @@
     All right reserved - 2017
 */
 
-// Constant values for Laser, Sensor and Buzzer
+// Constant values for tripwire
 #define pin_sensor A0
 #define pin_laser 02
 #define pin_buzzer 03
 
+// Constant values for button
+#define pin_manuel 04
+#define pin_automatic 04
+
 // Related with your environment and ambient light
 #define cut_off 650
 
-// Working duration of buzzer
+// Working and displaying duration variant
 #define delay_buzzer 100
-
-// Displaying duration of text
 #define delay_text 1000
+
+// Store manuel status for auto processing
+bool flag_manuel = false;
 
 void setup() {
 
@@ -38,6 +43,15 @@ void setup() {
 }
 
 void loop() {
+
+  buttonStatus = digitalRead(button);
+  
+  if (buttonStatus == HIGH) {
+    digitalWrite(led, HIGH);
+  }
+  else {
+    digitalWrite(led, LOW);
+  }
 }
 
 void initialize_laser() {
@@ -56,21 +70,13 @@ void initialize_laser() {
   // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
   if (initialize_sensor() == true) {
 
-    // Read the input pin and - or debug value
-    Serial.println("STEPPER > DOWNSIDE");
-
-    while (true) {
-      if (stepper_downside() == true) break;
-    }
+    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
+    while (flag_manuel == false && initialize_sensor() == true) stepper_downside();
   }
   else {
 
-    // Read the input pin and - or debug value
-    Serial.println("STEPPER > UPSIDE");
-
-    while (true) {
-      if (stepper_downside() == true) break;
-    }
+    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
+    while (flag_manuel == false && initialize_sensor() == false) stepper_upside();
   }
 
   // -----
@@ -79,16 +85,19 @@ void initialize_laser() {
   digitalWrite(pin_laser, LOW);
 
   // Initialize buzzer module
-  initialize_buzzer();
+  if (flag_manuel == false) initialize_buzzer();
 }
 
 bool initialize_sensor() {
 
+  // Store received value in variable
+  int sensor_value = analogRead(pin_sensor);
+
   // Read the input pin and - or debug value
-  Serial.println("SENSOR VALUE = " + String(analogRead(pin_sensor)));
+  Serial.println("SENSOR VALUE = " + String(sensor_value));
 
   // If laser tripwire interrupted by an object, break tripwire process
-  return (analogRead(pin_sensor) <= cut_off ? false : true);
+  return (sensor_value <= cut_off ? false : true);
 }
 
 void initialize_buzzer() {
@@ -106,14 +115,15 @@ void initialize_buzzer() {
   digitalWrite(pin_buzzer, LOW);
 }
 
-bool stepper_upside() {
+void stepper_upside() {
 
-
-
-  return (initialize_sensor() == false ? false : true);
+  // Read the input pin and - or debug value
+  Serial.println("STEPPER > UPSIDE");
 }
 
-bool stepper_downside() {
+void stepper_downside() {
 
-  return (initialize_sensor() == true ? false : true);
+  // Read the input pin and - or debug value
+  Serial.println("STEPPER > DOWNSIDE");
 }
+
