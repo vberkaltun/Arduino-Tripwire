@@ -44,8 +44,8 @@ void loop() {
 
   if (digitalRead(pin_automatic) == HIGH) {
 
-    // Initialize laser module
-    initialize_laser();
+    // Move stepper motor as automatic
+    stepper_automatic();
   }
   else if (digitalRead(pin_upside) == HIGH) {
 
@@ -59,38 +59,13 @@ void loop() {
   }
 }
 
-void initialize_laser() {
+bool initialize_laser() {
 
-  // Read the input pin and - or debug value
-  Serial.println("LASER INITIALIZING ...");
+  // Detect manuel inputs. if pressed, store it as true
+  bool initialize_value = (digitalRead(pin_upside) == HIGH || digitalRead(pin_downside) == HIGH) ? false : true;
 
-  // Turn the pin on (HIGH is the voltage level)
-  digitalWrite(pin_laser, HIGH);
-
-  // -----
-
-  // Wait for specified time
-  delay(delay_sensor);
-
-  // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
-  if (initialize_sensor() == true) {
-
-    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
-    while (stepper_manuel() == false && initialize_sensor() == true) stepper_downside();
-  }
-  else {
-
-    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
-    while (stepper_manuel() == false && initialize_sensor() == false) stepper_upside();
-  }
-
-  // -----
-
-  // Turn the pin off (LOW is the voltage level)
-  digitalWrite(pin_laser, LOW);
-
-  // Initialize buzzer module
-  if (stepper_manuel() == false) initialize_buzzer();
+  // Detect automatic inputs. If pressed, override it to manuel inputs
+  return digitalRead(pin_automatic) == HIGH ? true : initialize_value;
 }
 
 bool initialize_sensor() {
@@ -133,12 +108,36 @@ void stepper_downside() {
   Serial.println("STEPPER > DOWNSIDE");
 }
 
-bool stepper_manuel() {
+void stepper_automatic() {
 
-  // Detect manuel inputs. if pressed, store it as true
-  bool stepper_value = (digitalRead(pin_upside) == HIGH || digitalRead(pin_downside) == HIGH) ? true : false;
+  // Read the input pin and - or debug value
+  Serial.println("LASER INITIALIZING ...");
 
-  // Detect automatic inputs. If pressed, override it to manuel inputs
-  return digitalRead(pin_automatic) == HIGH ? false : stepper_value;
+  // Turn the pin on (HIGH is the voltage level)
+  digitalWrite(pin_laser, HIGH);
+
+  // -----
+
+  // Wait for specified time
+  delay(delay_sensor);
+
+  // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
+  if (initialize_sensor() == true) {
+
+    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
+    while (initialize_laser() == true && initialize_sensor() == true) stepper_downside();
+  }
+  else {
+
+    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
+    while (initialize_laser() == true && initialize_sensor() == false) stepper_upside();
+  }
+
+  // -----
+
+  // Turn the pin off (LOW is the voltage level)
+  digitalWrite(pin_laser, LOW);
+
+  // Initialize buzzer module
+  if (initialize_laser() == true) initialize_buzzer();
 }
-
