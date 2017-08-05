@@ -43,6 +43,9 @@
 // Declaring of stepper object
 Stepper stepper(steppper_step, steppper_pin_AA, steppper_pin_AB, steppper_pin_BA, steppper_pin_BB);
 
+// Flag of manuel or automatic inputs
+bool stepper_automatic = false;
+
 void setup() {
 
   // Begin serial communcation
