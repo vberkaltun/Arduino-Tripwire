@@ -55,6 +55,9 @@ void setup() {
   pinMode(pin_upside, INPUT);
   pinMode(pin_automatic, INPUT);
   pinMode(pin_downside, INPUT);
+
+  // Initialize stepper speed
+  stepper.setSpeed(steppper_speed);
 }
 
 void loop() {
@@ -117,12 +120,17 @@ void stepper_upside() {
   // Read the input pin and - or debug value
   Serial.println("STEPPER > UPSIDE");
 
+  // Move a step further
+  stepper.step(- steppper_degree);
 }
 
 void stepper_downside() {
 
   // Read the input pin and - or debug value
   Serial.println("STEPPER > DOWNSIDE");
+
+  // Move a step further
+  stepper.step(+ steppper_degree);
 }
 
 void stepper_automatic() {
