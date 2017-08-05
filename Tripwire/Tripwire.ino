@@ -12,34 +12,35 @@
 
 #include <Stepper.h>
 
-// Constant values for tripwire IO
+// Constant values of tripwire IO
 #define pin_sensor A0
 #define pin_laser 2
 #define pin_buzzer 3
 
-// Constant values for button IO
+// Constant values of button IO
 #define pin_upside 4
 #define pin_automatic 5
 #define pin_downside 6
 
-// Related with your environment and ambient light
+// Cut off value of LDR sensor module, related with your ambient light
 #define cut_off 650
 
-// Running duration buzzer and sensor
+// Running duration of buzzer and sensor
 #define delay_buzzer 100
 #define delay_sensor 250
 
-// Constant values for stepper IO
+// Constant values of stepper IO
 #define steppper_pin_AA 8
 #define steppper_pin_AB 9
 #define steppper_pin_BA 10
 #define steppper_pin_BB 11
 
-// How many steps per revolution the motor has and speed
+// How many steps per revolution and speed the motor has
 #define steppper_step 200
 #define steppper_degree 1.8
 #define steppper_speed 120
 
+// Declaring of stepper object
 Stepper stepper(steppper_step, steppper_pin_AA, steppper_pin_AB, steppper_pin_BA, steppper_pin_BB);
 
 void setup() {
