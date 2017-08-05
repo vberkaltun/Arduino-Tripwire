@@ -66,6 +66,7 @@ void setup() {
 
 void loop() {
 
+  // Read digital input and choose related process
   if (digitalRead(pin_automatic) == HIGH) {
 
     // Move stepper motor as automatic if it is not activated before
