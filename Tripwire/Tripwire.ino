@@ -68,18 +68,27 @@ void loop() {
 
   if (digitalRead(pin_automatic) == HIGH) {
 
-    // Move stepper motor as automatic
-    stepper_automatic();
+    // Move stepper motor as automatic if it is not activated before
+    if (stepper_automatic == false) stepper_automatic();
+
+    // Store this process into flag (TRUE)
+    stepper_automatic = true;
   }
   else if (digitalRead(pin_upside) == HIGH) {
 
     // Move stepper motor to upside
     stepper_upside();
+
+    // Store this process into flag (FALSE)
+    stepper_automatic = false;
   }
   else if  (digitalRead(pin_downside) == HIGH) {
 
     // Move stepper motor to downside
     stepper_downside();
+
+    // Store this process into flag (FALSE)
+    stepper_automatic = false;
   }
 }
 
