@@ -5,7 +5,7 @@
     For a better stability, do not change anything in this library and edit constant value that given at the top.
 
     This Library was written by Berk Altun. - www.vberkaltun.com
-    All right reserved. - 2017
+    GNU General Public License v3.0 - 2017
 
     Version 1.0 - Designed with Keyes Buzzer, Keyes Lazer, Keyes LDR and L298N Dual H-Bridge Motor Controller.
 */
