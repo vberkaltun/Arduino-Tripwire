@@ -10,22 +10,37 @@
     Version 1.0 - Designed with Keyes Buzzer, Keyes Lazer, Keyes LDR and L298N Dual H-Bridge Motor Controller.
 */
 
-// Constant values for tripwire
-#define pin_sensor A0
-#define pin_laser 02
-#define pin_buzzer 03
+#include <Stepper.h>
 
-// Constant values for button
-#define pin_upside 04
-#define pin_automatic 05
-#define pin_downside 06
+// Constant values for tripwire IO
+#define pin_sensor A0
+#define pin_laser 2
+#define pin_buzzer 3
+
+// Constant values for button IO
+#define pin_upside 4
+#define pin_automatic 5
+#define pin_downside 6
 
 // Related with your environment and ambient light
 #define cut_off 650
 
-// Running duration of variant
+// Running duration buzzer and sensor
 #define delay_buzzer 100
 #define delay_sensor 250
+
+// Constant values for stepper IO
+#define steppper_pin_AA 8
+#define steppper_pin_AB 9
+#define steppper_pin_BA 10
+#define steppper_pin_BB 11
+
+// How many steps per revolution the motor has and speed
+#define steppper_step 200
+#define steppper_degree 1.8
+#define steppper_speed 120
+
+Stepper stepper(steppper_step, steppper_pin_AA, steppper_pin_AB, steppper_pin_BA, steppper_pin_BB);
 
 void setup() {
 
