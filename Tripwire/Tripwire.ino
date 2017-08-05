@@ -44,7 +44,7 @@
 Stepper stepper(steppper_step, steppper_pin_AA, steppper_pin_AB, steppper_pin_BA, steppper_pin_BB);
 
 // Flag of manuel or automatic inputs
-bool stepper_automatic = false;
+bool stepper_flag = false;
 
 void setup() {
 
@@ -73,7 +73,7 @@ void loop() {
     if (stepper_automatic == false) stepper_automatic();
 
     // Store this process into flag (TRUE)
-    stepper_automatic = true;
+    stepper_flag = true;
   }
   else if (digitalRead(pin_upside) == HIGH) {
 
@@ -81,7 +81,7 @@ void loop() {
     stepper_upside();
 
     // Store this process into flag (FALSE)
-    stepper_automatic = false;
+    stepper_flag = false;
   }
   else if  (digitalRead(pin_downside) == HIGH) {
 
@@ -89,7 +89,7 @@ void loop() {
     stepper_downside();
 
     // Store this process into flag (FALSE)
-    stepper_automatic = false;
+    stepper_flag = false;
   }
 }
 
