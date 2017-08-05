@@ -70,7 +70,7 @@ void loop() {
   if (digitalRead(pin_automatic) == HIGH) {
 
     // Move stepper motor as automatic if it is not activated before
-    if (stepper_automatic == false) stepper_automatic();
+    if (stepper_flag == false) stepper_automatic();
 
     // Store this process into flag (TRUE)
     stepper_flag = true;
