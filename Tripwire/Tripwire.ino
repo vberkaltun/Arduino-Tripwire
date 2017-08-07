@@ -67,7 +67,7 @@ void setup() {
 void loop() {
 
   // Read digital input and choose related process
-  if (digitalRead(pin_automatic) == HIGH) {
+  if (stepper_flag == false && digitalRead(pin_automatic) == HIGH) {
 
     // Store this process into flag (TRUE)
     stepper_flag = true;
@@ -124,11 +124,11 @@ void initialize_laser() {
   // Read the input pin and - or debug value
   Serial.println("LASER INITIALIZING ...");
 
-  // Check flag and laser value. if laser is active, do not do it again
+  // Check flag and laser value. if laser is active, do not do same process again
   if (stepper_flag == true && digitalRead(pin_laser) == LOW)
     digitalWrite(pin_laser, HIGH);
 
-  // Check flag and laser value. if laser is deactive, do not do it again
+  // Check flag and laser value. if laser is deactive, do not do same process again
   if (stepper_flag == false && digitalRead(pin_laser) == HIGH)
     digitalWrite(pin_laser, LOW);
 }
