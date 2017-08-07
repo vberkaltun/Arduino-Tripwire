@@ -4,7 +4,7 @@
     For driving this code as stable, You need one laser circuit for transmitter and one sensor circuit for receiver.
     For a better stability, do not change anything in this library and edit constant value that given at the top.
 
-    This Library was written by Berk Altun. - www.vberkaltun.com
+    This Library was written by Berk Altun - www.vberkaltun.com
     GNU General Public License v3.0 - 2017
 
     Version 1.0 - Designed with Keyes Buzzer, Keyes Lazer, Keyes LDR and L298N Dual H-Bridge Motor Controller.
@@ -69,37 +69,68 @@ void loop() {
   // Read digital input and choose related process
   if (digitalRead(pin_automatic) == HIGH) {
 
-    // Move stepper motor as automatic if it is not activated before
-    if (stepper_flag == false) stepper_automatic();
-
     // Store this process into flag (TRUE)
     stepper_flag = true;
+
+    // Initialize laser module
+    initialize_laser();
+
+    // -----
+
+    // Wait for specified time
+    delay(delay_sensor);
+
+    // Detect the position of sensor at console
+    if (initialize_sensor() == true) {
+
+      // Depending on the value that returned from the sensor, run recursively to downside
+      while (stepper_flag == false && initialize_sensor() == true) stepper_downside();
+    }
+    else {
+
+      // Depending on the value that returned from the sensor, run recursively to upside
+      while (stepper_flag == false && initialize_sensor() == false) stepper_upside();
+    }
+
+    // Initialize buzzer module if automatic process is not interrupted by manuel process
+    if (stepper_flag == true) initialize_buzzer();
   }
   else if (digitalRead(pin_upside) == HIGH) {
 
-    // Move stepper motor to upside
-    stepper_upside();
-
     // Store this process into flag (FALSE)
     stepper_flag = false;
+
+    // Initialize laser module
+    initialize_laser();
+
+    // Move stepper motor to upside
+    stepper_upside();
   }
   else if  (digitalRead(pin_downside) == HIGH) {
 
-    // Move stepper motor to downside
-    stepper_downside();
-
     // Store this process into flag (FALSE)
     stepper_flag = false;
+
+    // Initialize laser module
+    initialize_laser();
+
+    // Move stepper motor to downside
+    stepper_downside();
   }
 }
 
-bool initialize_laser() {
+void initialize_laser() {
 
-  // Detect manuel inputs. if pressed, store it as true
-  bool initialize_value = (digitalRead(pin_upside) == HIGH || digitalRead(pin_downside) == HIGH) ? false : true;
+  // Read the input pin and - or debug value
+  Serial.println("LASER INITIALIZING ...");
 
-  // Detect automatic inputs. If pressed, override it to manuel inputs
-  return digitalRead(pin_automatic) == HIGH ? true : initialize_value;
+  // Check flag and laser value. if laser is active, do not do it again
+  if (stepper_flag == true && digitalRead(pin_laser) == LOW)
+    digitalWrite(pin_laser, HIGH);
+
+  // Check flag and laser value. if laser is deactive, do not do it again
+  if (stepper_flag == false && digitalRead(pin_laser) == HIGH)
+    digitalWrite(pin_laser, LOW);
 }
 
 bool initialize_sensor() {
@@ -117,7 +148,7 @@ bool initialize_sensor() {
 void initialize_buzzer() {
 
   // Read the input pin and - or debug value
-  Serial.println("BUZZER > TRUE");
+  Serial.println("BUZZER > ACTIVE");
 
   // Turn the pin on (HIGH is the voltage level)
   digitalWrite(pin_buzzer, HIGH);
@@ -145,38 +176,4 @@ void stepper_downside() {
 
   // Move a step further
   stepper.step(+ steppper_degree);
-}
-
-void stepper_automatic() {
-
-  // Read the input pin and - or debug value
-  Serial.println("LASER INITIALIZING ...");
-
-  // Turn the pin on (HIGH is the voltage level)
-  digitalWrite(pin_laser, HIGH);
-
-  // -----
-
-  // Wait for specified time
-  delay(delay_sensor);
-
-  // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
-  if (initialize_sensor() == true) {
-
-    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
-    while (initialize_laser() == true && initialize_sensor() == true) stepper_downside();
-  }
-  else {
-
-    // Depending on the value that returned from the sensor, run recursively. Otherwise, break process tree
-    while (initialize_laser() == true && initialize_sensor() == false) stepper_upside();
-  }
-
-  // -----
-
-  // Turn the pin off (LOW is the voltage level)
-  digitalWrite(pin_laser, LOW);
-
-  // Initialize buzzer module
-  if (initialize_laser() == true) initialize_buzzer();
 }
