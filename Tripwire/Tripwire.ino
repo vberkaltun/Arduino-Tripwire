@@ -43,9 +43,6 @@
 // Declaring of stepper object
 Stepper stepper(steppper_step, steppper_pin_AA, steppper_pin_AB, steppper_pin_BA, steppper_pin_BB);
 
-// Flag of manuel or automatic inputs
-bool stepper_flag = false;
-
 void setup() {
 
   // Begin serial communcation
@@ -67,15 +64,10 @@ void setup() {
 void loop() {
 
   // Read digital input and choose related process
-  if (stepper_flag == false && digitalRead(pin_automatic) == HIGH) {
-
-    // Store this process into flag (TRUE)
-    stepper_flag = true;
+  if (digitalRead(pin_automatic) == HIGH) {
 
     // Initialize laser module
-    initialize_laser();
-
-    // -----
+    initialize_laser(true);
 
     // Wait for specified time
     delay(delay_sensor);
@@ -84,53 +76,56 @@ void loop() {
     if (initialize_sensor() == true) {
 
       // Depending on the value that returned from the sensor, run recursively to downside
-      while (stepper_flag == false && initialize_sensor() == true) stepper_downside();
+      while (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW && initialize_sensor() == true)
+        stepper_downside();
     }
     else {
 
       // Depending on the value that returned from the sensor, run recursively to upside
-      while (stepper_flag == false && initialize_sensor() == false) stepper_upside();
+      while (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW  && initialize_sensor() == false)
+        stepper_upside();
     }
 
-    // Initialize buzzer module if automatic process is not interrupted by manuel process
-    if (stepper_flag == true) initialize_buzzer();
+    // Initialize buzzer module
+    initialize_buzzer();
   }
   else if (digitalRead(pin_upside) == HIGH) {
 
-    // Store this process into flag (FALSE)
-    stepper_flag = false;
-
     // Initialize laser module
-    initialize_laser();
+    initialize_laser(false);
 
     // Move stepper motor to upside
     stepper_upside();
   }
   else if  (digitalRead(pin_downside) == HIGH) {
 
-    // Store this process into flag (FALSE)
-    stepper_flag = false;
-
     // Initialize laser module
-    initialize_laser();
+    initialize_laser(false);
 
     // Move stepper motor to downside
     stepper_downside();
   }
 }
 
-void initialize_laser() {
+void initialize_laser(bool value) {
 
-  // Read the input pin and - or debug value
-  Serial.println("LASER INITIALIZING ...");
+  // Check flag and laser value. Depending on the status, do not do same process again
+  if (value == true && digitalRead(pin_laser) == LOW)
+  {
+    // Read the input pin and - or debug value
+    Serial.println("LASER INITIALIZING > HIGH");
 
-  // Check flag and laser value. if laser is active, do not do same process again
-  if (stepper_flag == true && digitalRead(pin_laser) == LOW)
+    // Activate laser module
     digitalWrite(pin_laser, HIGH);
+  }
+  else if (value == false && digitalRead(pin_laser) == HIGH)
+  {
+    // Read the input pin and - or debug value
+    Serial.println("LASER INITIALIZING > LOW");
 
-  // Check flag and laser value. if laser is deactive, do not do same process again
-  if (stepper_flag == false && digitalRead(pin_laser) == HIGH)
+    // Deactivate laser module
     digitalWrite(pin_laser, LOW);
+  }
 }
 
 bool initialize_sensor() {
