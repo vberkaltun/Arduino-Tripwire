@@ -86,6 +86,9 @@ void loop() {
         stepper_upside();
     }
 
+    // Initialize laser module
+    initialize_laser(false);
+
     // Initialize buzzer module if automatic process is not interrupted by manuel process
     if (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW) initialize_buzzer();
   }
