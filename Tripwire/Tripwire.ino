@@ -64,7 +64,7 @@ void setup() {
 void loop() {
 
   // Read digital input and choose related process
-  if (digitalRead(pin_automatic) == HIGH) {
+  if (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW & digitalRead(pin_automatic) == HIGH) {
 
     // Initialize laser module
     initialize_laser(true);
@@ -92,7 +92,7 @@ void loop() {
     // Initialize buzzer module if automatic process is not interrupted by manuel process
     if (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW) initialize_buzzer();
   }
-  else if (digitalRead(pin_upside) == HIGH) {
+  else if (digitalRead(pin_upside) == HIGH && digitalRead(pin_downside) == LOW & digitalRead(pin_automatic) == LOW) {
 
     // Initialize laser module
     initialize_laser(false);
@@ -100,7 +100,7 @@ void loop() {
     // Move stepper motor to upside
     stepper_upside();
   }
-  else if  (digitalRead(pin_downside) == HIGH) {
+  else if  (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == HIGH & digitalRead(pin_automatic) == LOW) {
 
     // Initialize laser module
     initialize_laser(false);
