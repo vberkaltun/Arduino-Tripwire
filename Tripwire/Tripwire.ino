@@ -29,20 +29,6 @@
 #define delay_buzzer 100
 #define delay_sensor 250
 
-// Constant values of stepper IO
-#define steppper_pin_AA 8
-#define steppper_pin_AB 9
-#define steppper_pin_BA 10
-#define steppper_pin_BB 11
-
-// How many steps per revolution and speed the motor has
-#define steppper_step 200
-#define steppper_degree 1.8
-#define steppper_speed 120
-
-// Declaring of stepper object
-Stepper stepper(steppper_step, steppper_pin_AA, steppper_pin_AB, steppper_pin_BA, steppper_pin_BB);
-
 void setup() {
 
   // Begin serial communcation
@@ -56,9 +42,6 @@ void setup() {
   pinMode(pin_upside, INPUT);
   pinMode(pin_automatic, INPUT);
   pinMode(pin_downside, INPUT);
-
-  // Initialize stepper speed
-  stepper.setSpeed(steppper_speed);
 }
 
 void loop() {
@@ -162,16 +145,10 @@ void stepper_upside() {
 
   // Read the input pin and - or debug value
   Serial.println("STEPPER > UPSIDE");
-
-  // Move a step further
-  stepper.step(- steppper_degree);
 }
 
 void stepper_downside() {
 
   // Read the input pin and - or debug value
   Serial.println("STEPPER > DOWNSIDE");
-
-  // Move a step further
-  stepper.step(+ steppper_degree);
 }
