@@ -7,10 +7,8 @@
     This Library was written by Berk Altun - www.vberkaltun.com
     GNU General Public License v3.0 - 2017
 
-    Version 1.0 - Designed with Keyes Buzzer, Keyes Lazer, Keyes LDR and L298N Dual H-Bridge Motor Controller.
+    Version 3.0 - Designed with Keyes Buzzer, Keyes Lazer, Keyes LDR and Digital Stepper Drive CWD556.
 */
-
-#include <Stepper.h>
 
 // Constant values of tripwire IO
 #define pin_sensor A0
@@ -19,8 +17,8 @@
 
 // Constant values of button IO
 #define pin_upside 4
-#define pin_automatic 5
-#define pin_downside 6
+#define pin_automatic 6
+#define pin_downside 5
 
 // Cut off value of LDR sensor module, related with your ambient light
 #define cut_off 650
@@ -34,11 +32,12 @@ void setup() {
   // Begin serial communcation
   Serial.begin(9600);
 
-  // Initialize digital pin as an output
+  // Initialize tripwire module pins
+  pinMode(pin_sensor, INPUT);
   pinMode(pin_laser, OUTPUT);
   pinMode(pin_buzzer, OUTPUT);
 
-  // Initialize digital pin as an input
+  // Initialize button module pins
   pinMode(pin_upside, INPUT);
   pinMode(pin_automatic, INPUT);
   pinMode(pin_downside, INPUT);
