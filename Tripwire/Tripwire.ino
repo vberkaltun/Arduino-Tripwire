@@ -41,6 +41,12 @@ void setup() {
   pinMode(pin_upside, INPUT);
   pinMode(pin_automatic, INPUT);
   pinMode(pin_downside, INPUT);
+
+  // Read the input pin and - or debug value
+  Serial.println("INITIALIZING > OK");
+
+  // Wait for specified time
+  delay(1000);
 }
 
 void loop() {
