@@ -93,6 +93,20 @@ void loop() {
   }
 }
 
+int check_button() {
+
+  // Store calculated value in variable
+  int button_value = 0;
+
+  // Make a bitwise. Each bit store a value associated with same button
+  bitWrite(button_value, 0 , digitalRead(pin_upside));
+  bitWrite(button_value, 1 , digitalRead(pin_automatic));
+  bitWrite(button_value, 2 , digitalRead(pin_downside));
+
+  // Return calculated value to caller method
+  return button_value;
+}
+
 void initialize_laser(bool value) {
 
   // Check flag and laser value. Depending on the status, do not do same process again
