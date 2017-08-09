@@ -45,50 +45,54 @@ void setup() {
 
 void loop() {
 
-  // Read digital input and choose related process
-  if (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW & digitalRead(pin_automatic) == HIGH) {
+  switch (check_button()) {
+    case 1:
 
-    // Initialize laser module
-    initialize_laser(true);
+      // Initialize laser module
+      initialize_laser(false);
 
-    // Wait for specified time
-    delay(delay_sensor);
+      // Move stepper motor to upside
+      stepper_upside();
 
-    // Detect the position of sensor at console
-    if (initialize_sensor() == true) {
+      break;
+    case 2:
 
-      // Depending on the value that returned from the sensor, run recursively to downside
-      while (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW && initialize_sensor() == true)
-        stepper_downside();
-    }
-    else {
+      // Initialize laser module
+      initialize_laser(true);
 
-      // Depending on the value that returned from the sensor, run recursively to upside
-      while (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW  && initialize_sensor() == false)
-        stepper_upside();
-    }
+      // Wait for specified time
+      delay(delay_sensor);
 
-    // Initialize laser module
-    initialize_laser(false);
+      // Detect the position of sensor at console
+      if (initialize_sensor() == true) {
 
-    // Initialize buzzer module if automatic process is not interrupted by manuel process
-    if (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == LOW) initialize_buzzer();
-  }
-  else if (digitalRead(pin_upside) == HIGH && digitalRead(pin_downside) == LOW & digitalRead(pin_automatic) == LOW) {
+        // Depending on the value that returned from the sensor, run recursively to downside
+        while ((check_button() == 0 ||  check_button() == 2) && initialize_sensor() == true)
+          stepper_downside();
+      }
+      else {
 
-    // Initialize laser module
-    initialize_laser(false);
+        // Depending on the value that returned from the sensor, run recursively to upside
+        while ((check_button() == 0 ||  check_button() == 2) && initialize_sensor() == false)
+          stepper_upside();
+      }
 
-    // Move stepper motor to upside
-    stepper_upside();
-  }
-  else if  (digitalRead(pin_upside) == LOW && digitalRead(pin_downside) == HIGH & digitalRead(pin_automatic) == LOW) {
+      // Initialize laser module
+      initialize_laser(false);
 
-    // Initialize laser module
-    initialize_laser(false);
+      // Initialize buzzer module if automatic process is not interrupted by manuel process
+      if (check_button() == 0 ||  check_button() == 2) initialize_buzzer();
 
-    // Move stepper motor to downside
-    stepper_downside();
+      break;
+    case 4:
+
+      // Initialize laser module
+      initialize_laser(false);
+
+      // Move stepper motor to downside
+      stepper_downside();
+
+      break;
   }
 }
 
